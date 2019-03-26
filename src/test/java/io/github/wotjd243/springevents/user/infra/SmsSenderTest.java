@@ -1,6 +1,7 @@
 package io.github.wotjd243.springevents.user.infra;
 
 import io.github.wotjd243.springevents.user.application.MessageSender;
+import io.github.wotjd243.springevents.user.domain.SignedUpEvent;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,6 @@ public class SmsSenderTest {
         // given
         // when
         // then
-        smsSender.sendCongratulation(TEST_NAME);
+        smsSender.sendCongratulation(new SignedUpEvent(TEST_NAME));
     }
 }

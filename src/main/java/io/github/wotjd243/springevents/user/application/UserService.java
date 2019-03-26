@@ -1,9 +1,11 @@
 package io.github.wotjd243.springevents.user.application;
 
+import io.github.wotjd243.springevents.user.domain.SignedUpEvent;
 import io.github.wotjd243.springevents.user.domain.User;
 import io.github.wotjd243.springevents.user.domain.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,13 +17,11 @@ public class UserService {
     private final static Logger logger = LoggerFactory.getLogger(UserService.class);
 
     private UserRepository userRepository;
-    private MessageSender emailSender;
-    private MessageSender smsSender;
+    private ApplicationEventPublisher publisher;
 
-    public UserService(final UserRepository userRepository, final MessageSender emailSender, final MessageSender smsSender) {
+    public UserService(final UserRepository userRepository, final ApplicationEventPublisher publisher) {
         this.userRepository = userRepository;
-        this.emailSender = emailSender;
-        this.smsSender = smsSender;
+        this.publisher = publisher;
     }
 
     @Transactional
@@ -32,8 +32,7 @@ public class UserService {
         logger.info("Join Step 2: Persistence");
         userRepository.save(user);
 
-        emailSender.sendCongratulation(user.getName()); // Send a mail
-        smsSender.sendCongratulation(user.getName()); // Send an SMS
+        publisher.publishEvent(new SignedUpEvent(user.getName()));
 
         logger.info("Join Step 5: Completed");
     }

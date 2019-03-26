@@ -1,12 +1,16 @@
 package io.github.wotjd243.springevents.user.application;
 
+import io.github.wotjd243.springevents.user.domain.SignedUpEvent;
 import io.github.wotjd243.springevents.user.domain.User;
 import io.github.wotjd243.springevents.user.domain.UserRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.context.ApplicationEventPublisher;
 
 import java.util.Arrays;
 import java.util.List;
@@ -14,6 +18,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -25,16 +30,16 @@ public class UserServiceTest {
     private UserRepository userRepository;
 
     @Mock
-    private MessageSender emailSender;
+    private ApplicationEventPublisher publisher;
 
-    @Mock
-    private MessageSender smsSender;
+    @Captor
+    private ArgumentCaptor<Object> publishEventCaptor;
 
     private UserService userService;
 
     @Before
     public void setUp() {
-        this.userService = new UserService(userRepository, emailSender, smsSender);
+        this.userService = new UserService(userRepository, publisher);
     }
 
     @Test
@@ -45,8 +50,7 @@ public class UserServiceTest {
 
         // then
         verify(userRepository).save(any(User.class));
-        verify(emailSender).sendCongratulation(TEST_NAME);
-        verify(smsSender).sendCongratulation(TEST_NAME);
+        verifyPublishedEvents(new SignedUpEvent(TEST_NAME));
     }
 
     @Test
@@ -61,5 +65,10 @@ public class UserServiceTest {
 
         // then
         assertThat(userNames).containsExactly(TEST_NAME);
+    }
+
+    private void verifyPublishedEvents(final Object... events) {
+        verify(publisher, times(events.length)).publishEvent(publishEventCaptor.capture());
+        assertThat(publishEventCaptor.getAllValues()).contains(events);
     }
 }
