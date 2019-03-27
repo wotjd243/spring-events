@@ -1,5 +1,6 @@
 package io.github.wotjd243.springevents.user.application;
 
+import io.github.wotjd243.springevents.user.domain.NotificationSettings;
 import io.github.wotjd243.springevents.user.domain.SignedUpEvent;
 import io.github.wotjd243.springevents.user.domain.User;
 import io.github.wotjd243.springevents.user.domain.UserRepository;
@@ -25,6 +26,7 @@ import static org.mockito.Mockito.verify;
 public class UserServiceTest {
     private static final long TEST_ID = 1L;
     private static final String TEST_NAME = "Jason";
+    private static final boolean TEST_RECEIVING = true;
 
     @Mock
     private UserRepository userRepository;
@@ -46,18 +48,18 @@ public class UserServiceTest {
     public void 회원가입() {
         // given
         // when
-        userService.join(TEST_ID, TEST_NAME);
+        userService.join(TEST_ID, TEST_NAME, TEST_RECEIVING);
 
         // then
         verify(userRepository).save(any(User.class));
-        verifyPublishedEvents(new SignedUpEvent(TEST_NAME));
+        verifyPublishedEvents(new SignedUpEvent(TEST_NAME, new NotificationSettings(TEST_RECEIVING)));
     }
 
     @Test
     public void 회원보기() {
         // given
         given(userRepository.findAll())
-                .willReturn(Arrays.asList(new User(TEST_ID, TEST_NAME)))
+                .willReturn(Arrays.asList(new User(TEST_ID, TEST_NAME, new NotificationSettings(TEST_RECEIVING))))
         ;
 
         // when

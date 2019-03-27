@@ -1,5 +1,6 @@
 package io.github.wotjd243.springevents.user.application;
 
+import io.github.wotjd243.springevents.user.domain.NotificationSettings;
 import io.github.wotjd243.springevents.user.domain.SignedUpEvent;
 import io.github.wotjd243.springevents.user.domain.User;
 import io.github.wotjd243.springevents.user.domain.UserRepository;
@@ -25,14 +26,14 @@ public class UserService {
     }
 
     @Transactional
-    public void join(final long id, final String name) {
+    public void join(final long id, final String name, final boolean receiving) {
         logger.info("Join Step 1: Beginning");
-        final User user = new User(id, name);
+        final User user = new User(id, name, new NotificationSettings(receiving));
 
         logger.info("Join Step 2: Persistence");
         userRepository.save(user);
 
-        publisher.publishEvent(new SignedUpEvent(user.getName()));
+        publisher.publishEvent(new SignedUpEvent(user.getName(), user.getNotificationSettings()));
 
         logger.info("Join Step 5: Completed");
     }

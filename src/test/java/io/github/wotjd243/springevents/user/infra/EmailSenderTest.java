@@ -1,6 +1,7 @@
 package io.github.wotjd243.springevents.user.infra;
 
 import io.github.wotjd243.springevents.user.application.MessageSender;
+import io.github.wotjd243.springevents.user.domain.NotificationSettings;
 import io.github.wotjd243.springevents.user.domain.SignedUpEvent;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -12,6 +13,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 @SpringBootTest
 public class EmailSenderTest {
     private static final String TEST_NAME = "Jason";
+    private static final NotificationSettings TEST_NOTIFICATION_SETTINGS = new NotificationSettings(true);
 
     @Autowired
     private MessageSender emailSender;
@@ -21,6 +23,6 @@ public class EmailSenderTest {
         // given
         // when
         // then
-        emailSender.sendCongratulation(new SignedUpEvent(TEST_NAME));
+        emailSender.sendCongratulation(new SignedUpEvent(TEST_NAME, TEST_NOTIFICATION_SETTINGS));
     }
 }

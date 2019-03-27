@@ -14,7 +14,8 @@ public class SpringEventsApplication {
     public static void main(String[] args) {
         final ApplicationContext context = SpringApplication.run(SpringEventsApplication.class, args);
         final UserService userService = context.getBean(UserService.class);
-        userService.join(1L, "Jason");
+        userService.join(1L, "Jason", true);
+        userService.join(2L, "Pobi", false);
         logger.info("User list: {}", userService.lookup());
     }
 }
